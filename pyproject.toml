@@ -22,4 +22,4 @@ build-backend = "hatchling.build"
 
 [tool.hatch.version]
 pattern = "(?P<version>.*)"
-path = ".version"
+path = "version"
