@@ -17,11 +17,8 @@ from delusion.chat import ChatModel, Message
 
 class Ollama(ChatModel):
 
-    host: str = "10.0.0.64"
+    host: str = Field(os.getenv("OLLAMA_HOST", "127.0.0.1:11434"), exclude=True)
     """Server address (URL, IPv4, IPv6, localhost, hostname)"""
-
-    port: int = 11434
-    """Server or proxy port"""
 
     options: ollama.Options = Field(default_factory=ollama.Options)
     """Generation options"""
@@ -37,8 +34,6 @@ class Ollama(ChatModel):
 
     def serve(self) -> Self:
         """Ensure ollama server is running"""
-        os.environ.setdefault("OLLAMA_HOST", f"{self.host}:{self.port}")
-
         for _attempt in range(40):
             try:
                 ollama.ps()
