@@ -18,6 +18,7 @@ chat.send("Tell me about Canada, its capital and spoken languages.")
 canada = chat.generate(schema=Country)
 print(canada.struct)
 
+assert isinstance(canada.struct, Country)
 assert (canada.struct.name == "Canada")
 assert (canada.struct.capital == "Ottawa")
 assert (canada.struct.languages == {"English", "French"})

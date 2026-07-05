@@ -36,11 +36,6 @@ class Ollama(ChatModel):
     def serve(self) -> Self:
         """Ensure ollama server is running"""
         os.environ.setdefault("OLLAMA_HOST", f"{self.host}:{self.port}")
-        os.environ.setdefault("OLLAMA_FLASH_ATTENTION", str(1))
-        os.environ.setdefault("OLLAMA_KV_CACHE_TYPE", "q8_0")
-        os.environ.setdefault("OLLAMA_NUM_PARALLEL", str(1))
-        os.environ.setdefault("OLLAMA_MAX_QUEUE", str(1000))
-        os.environ.setdefault("OLLAMA_NO_CLOUD", str(1))
 
         for _attempt in range(40):
             try:
