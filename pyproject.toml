@@ -2,7 +2,7 @@
 name        = "delusion"
 description = "✨ A minimal generative models router"
 authors     = [{name="Tremeschin"}]
-version     = "0.2.0"
+dynamic     = ["version"]
 readme      = "readme.md"
 license     = "MIT"
 requires-python = ">=3.12"
@@ -19,3 +19,7 @@ GitHub = "https://github.com/BrokenSource/Delusion"
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[tool.hatch.version]
+pattern = "(?P<version>.*)"
+path = ".version"

@@ -2,8 +2,8 @@ name: release
 on:
   workflow_dispatch:
   push:
-    tags:
-      - "v*"
+    paths:
+      - "version"
 
 jobs:
   main:
@@ -14,5 +14,11 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - uses: astral-sh/setup-uv@v8.2.0
+      - run:  echo "VERSION=$(cat version)" >> "$GITHUB_ENV"
       - run:  uv build --wheel
       - run:  uv publish
+      - uses: softprops/action-gh-release@v3
+        with:
+          name: Release ${{ env.VERSION }}
+          tag_name: v${{ env.VERSION }}
+          files: dist/*.whl

@@ -40,7 +40,7 @@ class Message[T: BaseModel](BaseModel):
     """Text content"""
 
     struct: T = None # type: ignore
-    """Structured model output"""
+    """Structured model instance"""
 
 # ---------------------------------------------------------------------------- #
 
@@ -53,7 +53,7 @@ class ChatModel(BaseModel, ABC):
     """Whether to enable internal reasoning and/or its effort level"""
 
     messages: list[Message] = Field(default_factory=list)
-    """Chat history"""
+    """Chat messages history"""
 
     @contextlib.contextmanager
     def branch(self) -> Generator[Self, None, None]:
