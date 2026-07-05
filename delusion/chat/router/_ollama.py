@@ -3,6 +3,7 @@ import os
 import shutil
 import subprocess
 import time
+from collections.abc import MutableMapping
 from typing import Any, Optional, Self
 
 import cachetools
@@ -10,7 +11,8 @@ import ollama
 from pydantic import BaseModel, Field, ValidationError
 
 from delusion import logger
-from delusion.chat import CHAT_CACHE, ChatModel, Message
+from delusion.cache import CHAT_CACHE
+from delusion.chat import ChatModel, Message
 
 
 class Ollama(ChatModel):
@@ -25,12 +27,12 @@ class Ollama(ChatModel):
     """Generation options"""
 
     @staticmethod
-    def cache(client: ollama.Client | Any, ) -> ollama.Client:
+    def cache(client: ollama.Client | Any, cache: MutableMapping) -> ollama.Client:
         """Apply caching to generative or data querying ollama calls"""
-        client.web_search = cachetools.cached(CHAT_CACHE)(client.web_search) # type: ignore
-        client.web_fetch  = cachetools.cached(CHAT_CACHE)(client.web_fetch)  # type: ignore
-        client.generate   = cachetools.cached(CHAT_CACHE)(client.generate)   # type: ignore
-        client.chat       = cachetools.cached(CHAT_CACHE)(client.chat)       # type: ignore
+        client.web_search = cachetools.cached(cache)(client.web_search) # type: ignore
+        client.web_fetch  = cachetools.cached(cache)(client.web_fetch)  # type: ignore
+        client.generate   = cachetools.cached(cache)(client.generate)   # type: ignore
+        client.chat       = cachetools.cached(cache)(client.chat)       # type: ignore
         return client
 
     def serve(self) -> Self:
@@ -146,12 +148,22 @@ class Ollama(ChatModel):
                         f"attempt ({attempt+1}/{retries}) • Content: {message.content}"
                     ))
                     continue
+            break
 
-            self.messages.append(message)
-            return message
         else:
             raise RuntimeError(f"Failed to generate valid {schema} in {retries} attempts")
 
+        self.messages.append(message)
+        return message
+
 # Safe: Patch same name re-exports
-Ollama.cache(ollama._client)
-Ollama.cache(ollama)
+if os.getenv("DELUSION_OLLAMA_CACHE", "1") == "1":
+    Ollama.cache(ollama._client, CHAT_CACHE) # type: ignore
+    Ollama.cache(ollama, CHAT_CACHE) # type: ignore
+
+    # https://github.com/pydantic/pydantic/issues/11603#issuecomment-4624919538
+    def getstate(self: BaseModel) -> dict:
+        return {"__dict__": self.__dict__}
+
+    ollama.Message.__getstate__ = getstate # type: ignore
+    ollama.Options.__getstate__ = getstate # type: ignore

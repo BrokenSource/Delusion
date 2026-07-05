@@ -3,25 +3,7 @@ import copy
 from abc import ABC, abstractmethod
 from typing import Generator, Literal, Optional, Self, Union
 
-from diskcache import Cache as DiskCache
 from pydantic import BaseModel, Field
-
-import delusion
-
-# ---------------------------------------------------------------------------- #
-# https://github.com/pydantic/pydantic/issues/11603#issuecomment-4624919538
-
-def getstate(self: BaseModel) -> dict:
-    return {"__dict__": self.__dict__}
-
-BaseModel.__getstate__ = getstate # type: ignore
-
-CHAT_CACHE: DiskCache = DiskCache(
-    directory=delusion.dirs.user_data_path.joinpath("chat"),
-    size_limit=(512 * 1024**2), # MB
-)
-
-# ---------------------------------------------------------------------------- #
 
 type Tokens = int
 type Seconds = float
