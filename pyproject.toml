@@ -2,7 +2,7 @@
 name        = "delusion"
 description = "✨ A minimal generative models router"
 authors     = [{name="Tremeschin"}]
-version     = "0.1.0"
+version     = "0.2.0"
 readme      = "readme.md"
 license     = "MIT"
 requires-python = ">=3.10"

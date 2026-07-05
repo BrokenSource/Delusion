@@ -14,7 +14,7 @@ chat.gemma4("e2b").pull()
 
 chat.send("Tell me about Canada, its capital and spoken languages.")
 
-# Your linter should properly point to
+# Your linter should properly point to the class
 canada = chat.generate(schema=Country)
 print(canada.struct)
 
