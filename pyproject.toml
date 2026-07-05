@@ -5,7 +5,7 @@ authors     = [{name="Tremeschin"}]
 version     = "0.2.0"
 readme      = "readme.md"
 license     = "MIT"
-requires-python = ">=3.10"
+requires-python = ">=3.12"
 dependencies = [
     "cachetools",
     "ollama",
