@@ -8,8 +8,9 @@ license     = "MIT"
 requires-python = ">=3.12"
 dependencies = [
     "cachetools",
-    "ollama",
     "diskcache",
+    "ollama",
+    "platformdirs",
     "pydantic",
 ]
 
