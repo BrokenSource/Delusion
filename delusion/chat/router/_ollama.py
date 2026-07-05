@@ -8,6 +8,7 @@ from typing import Any, Optional, Self
 
 import cachetools
 import ollama
+from ollama import Client, Options
 from pydantic import BaseModel, Field, ValidationError
 
 from delusion import logger
@@ -20,11 +21,11 @@ class Ollama(ChatModel):
     host: str = Field(os.getenv("OLLAMA_HOST", "127.0.0.1:11434"), exclude=True)
     """Server address (URL, IPv4, IPv6, localhost, hostname)"""
 
-    options: ollama.Options = Field(default_factory=ollama.Options)
+    options: Options = Field(default_factory=Options)
     """Generation options"""
 
     @staticmethod
-    def cache(client: ollama.Client | Any, cache: MutableMapping) -> ollama.Client:
+    def cache(client: Client | Any, cache: MutableMapping) -> Client:
         """Apply caching to generative or data querying ollama calls"""
         client.web_search = cachetools.cached(cache)(client.web_search) # type: ignore
         client.web_fetch  = cachetools.cached(cache)(client.web_fetch)  # type: ignore
@@ -151,8 +152,9 @@ class Ollama(ChatModel):
         self.messages.append(message)
         return message
 
-# Safe: Patch same name re-exports
 if os.getenv("DELUSION_OLLAMA_CACHE", "1") == "1":
+
+    # Safe: Patch same name re-exports
     Ollama.cache(ollama._client, CHAT_CACHE) # type: ignore
     Ollama.cache(ollama, CHAT_CACHE) # type: ignore
 

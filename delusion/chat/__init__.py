@@ -55,6 +55,15 @@ class ChatModel(BaseModel, ABC):
     messages: list[Message] = Field(default_factory=list)
     """Chat history"""
 
+    @contextlib.contextmanager
+    def branch(self) -> Generator[Self, None, None]:
+        """Restores messages at entry on context exit"""
+        stale = copy.deepcopy(self.messages)
+        try:
+            yield self
+        finally:
+            self.messages = stale
+
     @abstractmethod
     def generate[T: BaseModel](self,
         schema: Optional[type[T]]=None,
@@ -74,11 +83,3 @@ class ChatModel(BaseModel, ABC):
         """Add a message to the chat history"""
         self.messages.append(Message(role=role, content=content))
         return self
-
-    @contextlib.contextmanager
-    def branch(self) -> Generator[Self, None, None]:
-        stale = copy.deepcopy(self.messages)
-        try:
-            yield self
-        finally:
-            self.messages = stale
