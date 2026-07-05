@@ -11,6 +11,7 @@ jobs:
     environment: release
     permissions:
       id-token: write
+      contents: write
     steps:
       - uses: actions/checkout@v6
       - uses: astral-sh/setup-uv@v8.2.0
