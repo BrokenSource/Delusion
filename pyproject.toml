@@ -1,8 +1,7 @@
 [project]
 name        = "delusion"
 description = "✨ A minimal generative models router"
-authors     = [{name="Tremeschin"}]
-dynamic     = ["version"]
+version     = "0.2.1"
 readme      = "readme.md"
 license     = "MIT"
 requires-python = ">=3.12"
@@ -21,6 +20,3 @@ GitHub = "https://github.com/BrokenSource/Delusion"
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
-[tool.hatch.version]
-pattern = "(?P<version>.*)"
-path = "version"
