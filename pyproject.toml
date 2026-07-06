@@ -1,7 +1,7 @@
 [project]
 name        = "delusion"
 description = "✨ A minimal generative models router"
-version     = "0.2.1"
+version     = "0.2.2"
 readme      = "readme.md"
 license     = "MIT"
 requires-python = ">=3.12"
