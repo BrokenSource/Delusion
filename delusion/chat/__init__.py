@@ -6,7 +6,11 @@ from typing import Generator, Literal, Optional, Self, Union
 from pydantic import BaseModel, Field
 
 type Tokens = int
+"""The gambling currency"""
+
 type Seconds = float
+"""The patience currency"""
+
 type Role = Literal[
     "assistant",
     "system",
@@ -58,11 +62,11 @@ class ChatModel(BaseModel, ABC):
     @contextlib.contextmanager
     def branch(self) -> Generator[Self, None, None]:
         """Restores messages at entry on context exit"""
-        stale = copy.deepcopy(self.messages)
+        self.messages = copy.deepcopy(this := self.messages)
         try:
             yield self
         finally:
-            self.messages = stale
+            self.messages = this
 
     @abstractmethod
     def generate[T: BaseModel](self,
