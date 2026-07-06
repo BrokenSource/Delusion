@@ -9,7 +9,7 @@ from typing import Any, Optional, Self
 import cachetools
 import ollama
 from ollama import Client, Options
-from pydantic import BaseModel, Field, ValidationError
+from pydantic import BaseModel, Field, PrivateAttr, ValidationError
 
 from delusion import logger
 from delusion.cache import CHAT_CACHE
@@ -23,6 +23,12 @@ class Ollama(ChatModel):
 
     options: Options = Field(default_factory=Options)
     """Generation options"""
+
+    _client: Client = PrivateAttr(default_factory=Client)
+    """Internal cached ollama client"""
+
+    def model_post_init(self, _ctx):
+        Ollama.cache(self._client, CHAT_CACHE) # type: ignore
 
     @staticmethod
     def cache(client: Client | Any, cache: MutableMapping) -> Client:
@@ -109,7 +115,7 @@ class Ollama(ChatModel):
             options.seed = (options.seed or 0) + 1
 
             # Attempt to generate
-            response = ollama.chat(
+            response = self._client.chat(
                 model=self.model,
                 think=self.think,
                 options=options.model_dump(),
@@ -151,7 +157,3 @@ class Ollama(ChatModel):
 
         self.messages.append(message)
         return message
-
-if os.getenv("DELUSION_OLLAMA_CACHE", "1") == "1":
-    Ollama.cache(ollama._client, CHAT_CACHE) # type: ignore
-    Ollama.cache(ollama, CHAT_CACHE) # type: ignore
