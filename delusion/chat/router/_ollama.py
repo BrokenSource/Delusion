@@ -89,7 +89,7 @@ class Ollama(ChatModel):
         options = copy.deepcopy(self.options)
 
         # Model best practices
-        if "gemma4" in self.model:
+        if self.model.startswith("gemma4"):
             for item in history:
                 item.think = None
 
@@ -112,14 +112,14 @@ class Ollama(ChatModel):
             response = ollama.chat(
                 model=self.model,
                 think=self.think,
-                options=options,
+                options=options.model_dump(),
                 format=(schema.model_json_schema() if schema else None),
                 messages=[
                     ollama.Message(
                         role=item.role,
                         content=item.content,
                         thinking=item.think,
-                    )
+                    ).model_dump()
                     for item in history
                 ],
             )
@@ -153,14 +153,5 @@ class Ollama(ChatModel):
         return message
 
 if os.getenv("DELUSION_OLLAMA_CACHE", "1") == "1":
-
-    # Safe: Patch same name re-exports
     Ollama.cache(ollama._client, CHAT_CACHE) # type: ignore
     Ollama.cache(ollama, CHAT_CACHE) # type: ignore
-
-    # https://github.com/pydantic/pydantic/issues/11603#issuecomment-4624919538
-    def getstate(self: BaseModel) -> dict:
-        return {"__dict__": self.__dict__}
-
-    ollama.Message.__getstate__ = getstate # type: ignore
-    ollama.Options.__getstate__ = getstate # type: ignore
