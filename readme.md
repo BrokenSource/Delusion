@@ -1,8 +1,31 @@
-A minimal generative models router, caching, structured output with native python linting.
+> [!IMPORTANT]
+> Work in progress - internal code refactor.
 
-Work in progress.
+<div align="center">
+  <h1>Delusion</h1>
+  <span>✨ The missing conveniences in generative models ✨</span>
+</div>
 
-## Chat example
+## 📦 Description
+
+A small toolkit for generative models, with practical conveniences built in: such as caching, fast imports, syntactic sugars, opinionated architecture, curated providers, and more.
+
+- [x] **Message** classes with type-safe structured output generics, auto validation (chat)
+- [x] **Modular**: Easily write your implementations or modify existing ones.
+- [x] **Minimal**: Avoids the complexity and commitment of a full framework.
+
+## 📦 Installation
+
+Simply add the [`delusion`](https://pypi.org/project/delusion/) PyPI package to your `pyproject.toml`:
+
+```toml
+[project]
+dependencies = ["delusion"]
+```
+
+## 📦 Examples
+
+### Chat
 
 ```python
 from delusion.chat.router import Ollama
@@ -27,3 +50,4 @@ print(canada.struct)
 assert (canada.struct.name == "Canada")
 assert (canada.struct.capital == "Ottawa")
 assert (canada.struct.languages == {"English", "French"})
+```
