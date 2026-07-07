@@ -14,16 +14,14 @@ A small toolkit for generative models, with practical conveniences built in: suc
 - [x] **Modular**: Easily write your implementations or modify existing ones.
 - [x] **Minimal**: Avoids the complexity and commitment of a full framework.
 
-## 📦 Installation
+## 📦 Usage
 
-Simply add the [`delusion`](https://pypi.org/project/delusion/) PyPI package to your `pyproject.toml`:
+Simply add the [`delusion`](https://pypi.org/project/delusion/) PyPI package to your `pyproject.toml` and use it:
 
 ```toml
 [project]
 dependencies = ["delusion"]
 ```
-
-## 📦 Examples
 
 ### Chat
 
