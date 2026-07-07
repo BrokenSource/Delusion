@@ -1,9 +1,9 @@
 [project]
 name        = "delusion"
-description = "✨ A minimal generative models router"
+description = "✨ The missing conveniences in generative models"
 version     = "0.2.2"
-readme      = "readme.md"
 license     = "MIT"
+readme      = "readme.md"
 requires-python = ">=3.12"
 dependencies = [
     "cachetools",
