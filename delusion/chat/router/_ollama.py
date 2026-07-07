@@ -39,9 +39,12 @@ class Ollama(ChatModel):
         client.chat       = cachetools.cached(cache)(client.chat)       # type: ignore
         return client
 
-    def serve(self) -> Self:
+    def serve(self,
+        timeout: float=5.0,
+        checks: float=0.1,
+    ) -> Self:
         """Ensure ollama server is running"""
-        for _attempt in range(40):
+        for _attempt in range(int(timeout/checks)):
             try:
                 ollama.ps()
                 break
@@ -55,7 +58,7 @@ class Ollama(ChatModel):
                         stdout=subprocess.DEVNULL,
                         stderr=subprocess.DEVNULL,
                     )
-                time.sleep(0.1)
+                time.sleep(checks)
         else:
             raise RuntimeError("Couldn't start ollama server")
 
