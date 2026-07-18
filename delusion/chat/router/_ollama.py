@@ -17,6 +17,7 @@ from delusion.chat import ChatModel, Message
 
 
 class Ollama(ChatModel):
+    """https://ollama.com/"""
 
     host: str = Field(os.getenv("OLLAMA_HOST", "127.0.0.1:11434"), exclude=True)
     """Server address (URL, IPv4, IPv6, localhost, hostname)"""
@@ -82,7 +83,7 @@ class Ollama(ChatModel):
         self.options.top_k = 64
         return self
 
-    def context(self, k: int) -> Self:
+    def context(self, k: int=8) -> Self:
         self.options.num_ctx = k*1024
         return self
 

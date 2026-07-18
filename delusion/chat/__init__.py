@@ -3,7 +3,7 @@ import copy
 from abc import ABC, abstractmethod
 from typing import Generator, Literal, Optional, Self, Union
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, computed_field
 
 type Tokens = int
 """The gambling currency"""
@@ -17,6 +17,8 @@ type Role = Literal[
     "tool",
     "user",
 ]
+
+# ---------------------------------------------------------------------------- #
 
 class Message[T: BaseModel](BaseModel):
 
@@ -33,6 +35,11 @@ class Message[T: BaseModel](BaseModel):
 
         context: Tokens = 0
         """Number of input tokens in the prompt"""
+
+        @computed_field
+        @property
+        def tokens_per_second(self) -> float:
+            return round(self.generated / (self.duration + 1e-9), 2)
 
     stats: Stats = Field(default_factory=Stats)
     """Generation statistics"""
