@@ -6,14 +6,11 @@ __meta__    = metadata(str(__package__))
 __about__   = __meta__.get("Summary")
 __version__ = __meta__.get("Version")
 
-from pathlib import Path
+from smartdirs import Path, SmartDirs
 
-from platformdirs import PlatformDirs
-
-resources = Path(__file__).parent/"resources"
-
-dirs = PlatformDirs(
-    appname=__package__,
-    ensure_exists=True,
-    opinion=True,
+dirs = SmartDirs(
+    pkg=Path(__file__).parent,
+    app=str(__package__),
+    org="tremeschin",
+    url="com",
 )
