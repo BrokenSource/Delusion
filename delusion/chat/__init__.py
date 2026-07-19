@@ -25,6 +25,15 @@ class Message[T: BaseModel](BaseModel):
     role: Role = "user"
     """Sender or message type"""
 
+    think: Optional[str] = None
+    """Internal model reasoning"""
+
+    content: Optional[str] = None
+    """Text content"""
+
+    struct: T = None # type: ignore
+    """Structured model instance"""
+
     class Stats(BaseModel):
 
         duration: Seconds = 0.0
@@ -39,19 +48,13 @@ class Message[T: BaseModel](BaseModel):
         @computed_field
         @property
         def tokens_per_second(self) -> float:
-            return round(self.generated / (self.duration + 1e-9), 2)
+            return (
+                round(self.generated / self.duration, 2)
+                if self.duration > 0 else 0.0
+            )
 
     stats: Stats = Field(default_factory=Stats)
     """Generation statistics"""
-
-    think: Optional[str] = None
-    """Internal model reasoning"""
-
-    content: Optional[str] = None
-    """Text content"""
-
-    struct: T = None # type: ignore
-    """Structured model instance"""
 
 # ---------------------------------------------------------------------------- #
 
