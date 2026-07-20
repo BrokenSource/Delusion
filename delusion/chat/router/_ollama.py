@@ -4,7 +4,7 @@ import shutil
 import subprocess
 import time
 from collections.abc import MutableMapping
-from typing import Any, Optional, Self
+from typing import Optional, Self
 
 import cachetools
 import ollama
@@ -32,7 +32,7 @@ class Ollama(ChatModel):
         Ollama.cache(self._client, CHAT_CACHE) # type: ignore
 
     @staticmethod
-    def cache(client: Client | Any, cache: MutableMapping) -> Client:
+    def cache(client: Client, cache: MutableMapping) -> Client:
         """Apply caching to generative or data querying ollama calls"""
         client.web_search = cachetools.cached(cache)(client.web_search) # type: ignore
         client.web_fetch  = cachetools.cached(cache)(client.web_fetch)  # type: ignore

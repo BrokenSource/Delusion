@@ -32,7 +32,7 @@ class Message[T: BaseModel](BaseModel):
     """Text content"""
 
     struct: T = None # type: ignore
-    """Structured model instance"""
+    """Validated model instance"""
 
     class Stats(BaseModel):
 
