@@ -13,10 +13,10 @@ from pydantic import BaseModel, Field, PrivateAttr, ValidationError
 
 from delusion import logger
 from delusion.cache import CHAT_CACHE
-from delusion.chat import ChatModel, Message
+from delusion.chat import Chat, Message
 
 
-class Ollama(ChatModel):
+class Ollama(Chat):
     """https://ollama.com/"""
 
     host: str = Field(os.getenv("OLLAMA_HOST", "127.0.0.1:11434"), exclude=True)

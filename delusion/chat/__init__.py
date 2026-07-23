@@ -5,18 +5,7 @@ from typing import Generator, Literal, Optional, Self, Union
 
 from pydantic import BaseModel, Field, computed_field
 
-type Tokens = int
-"""The gambling currency"""
-
-type Seconds = float
-"""The patience currency"""
-
-type Role = Literal[
-    "assistant",
-    "system",
-    "tool",
-    "user",
-]
+from delusion.types import Role, Second, Token
 
 # ---------------------------------------------------------------------------- #
 
@@ -36,13 +25,13 @@ class Message[T: BaseModel](BaseModel):
 
     class Stats(BaseModel):
 
-        duration: Seconds = 0.0
+        duration: Second = 0.0
         """Time taken to generate the message"""
 
-        generated: Tokens = 0
+        generated: Token = 0
         """Number of output tokens generated in the response"""
 
-        context: Tokens = 0
+        context: Token = 0
         """Number of input tokens in the prompt"""
 
         @computed_field
@@ -58,7 +47,7 @@ class Message[T: BaseModel](BaseModel):
 
 # ---------------------------------------------------------------------------- #
 
-class ChatModel(BaseModel, ABC):
+class Chat(BaseModel, ABC):
 
     model: str = None # type: ignore
     """Common model name or identifier"""
