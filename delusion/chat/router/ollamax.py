@@ -1,0 +1,174 @@
+import copy
+import os
+import shutil
+import subprocess
+import time
+from collections.abc import MutableMapping
+from typing import Annotated, Self
+
+import cachetools
+import ollama
+from ollama import Client, Options
+from pydantic import BaseModel, Field, PrivateAttr, ValidationError
+
+from delusion import logger
+from delusion.cache import CHAT_CACHE
+from delusion.chat import Chat, Message
+
+
+class Ollama(Chat):
+    """Wrapper for https://ollama.com/"""
+
+    host: Annotated[str, Field(exclude=True)] = os.getenv("OLLAMA_HOST", "127.0.0.1:11434")
+    """Server address (URL, IPv4, IPv6, localhost, hostname, ...)"""
+
+    options: Options = Field(default_factory=Options)
+    """Generation options"""
+
+    _client: Client = PrivateAttr(default_factory=Client)
+    """Internal cached ollama client"""
+
+    def model_post_init(self, _ctx):
+        Ollama.cache(self._client, CHAT_CACHE) # type: ignore
+
+    @staticmethod
+    def cache(client: Client, cache: MutableMapping) -> Client:
+        """Apply caching to generative or data querying ollama calls"""
+        client.web_search = cachetools.cached(cache)(client.web_search) # type: ignore
+        client.web_fetch  = cachetools.cached(cache)(client.web_fetch)  # type: ignore
+        client.generate   = cachetools.cached(cache)(client.generate)   # type: ignore
+        client.chat       = cachetools.cached(cache)(client.chat)       # type: ignore
+        return client
+
+    def serve(self,
+        timeout: float=5.0,
+        checks: float=0.1,
+    ) -> Self:
+        """Ensure ollama server is running"""
+        for attempt in range(int(timeout/checks)):
+            try:
+                ollama.ps()
+                break
+            except ConnectionError:
+                if attempt == 1:
+                    if shutil.which("ollama") is None:
+                        raise RuntimeError("Ollama wasn't found in the system")
+                    logger.info("Starting ollama server")
+                    subprocess.Popen(
+                        args=("ollama", "serve"),
+                        stdout=subprocess.DEVNULL,
+                        stderr=subprocess.DEVNULL,
+                    )
+                time.sleep(checks)
+        else:
+            raise RuntimeError("Couldn't start ollama server")
+
+        return self
+
+    # -------------------------------------------------------------------------#
+    # Options
+
+    def context(self, k: int=8) -> Self:
+        self.options.num_ctx = k*1024
+        return self
+
+    def temperature(self, t: float) -> Self:
+        self.options.temperature = t
+        return self
+
+    # -------------------------------------------------------------------------#
+    # Models
+
+    def pull(self) -> Self:
+        """Ensure model is available"""
+        for item in ollama.list().models:
+            if item.model == self.model:
+                break
+        else:
+            logger.info(f"Pulling ollama model: {self.model}")
+            ollama.pull(self.model)
+        return self
+
+    def gemma4(self, variant: str) -> Self:
+        """https://ollama.com/library/gemma4"""
+        self.model = f"gemma4:{variant}"
+        self.options.temperature = 1.0
+        self.options.top_p = 0.95
+        self.options.top_k = 64
+        return self
+
+    # -------------------------------------------------------------------------#
+
+    def generate[T: BaseModel](self,
+        schema: type[T] | None = None,
+        retries: int = 3,
+    ) -> Message[T]:
+
+        # Branch state for internal mutations
+        history = copy.deepcopy(self.messages)
+        options = copy.deepcopy(self.options)
+
+        # Model best practices
+        if self.model.startswith("gemma4"):
+            for item in history:
+                item.think = None
+
+        # Guidelines for schema
+        if schema is not None:
+            history.append(Message(
+                role="system",
+                content="\n".join((
+                    "Using the previous conversation, reason the final answer.",
+                    "Return a minimal JSON object matching the following schema.",
+                    str(schema.model_json_schema()),
+                )),
+            ))
+
+        for attempt in range(retries):
+
+            # Roll the seed for cached attempts
+            options.seed = (options.seed or 0) + 1
+
+            # Attempt to generate
+            response = self._client.chat(
+                model=self.model,
+                think=self.think,
+                options=options.model_dump(),
+                format=(schema.model_json_schema() if schema else None),
+                messages=[
+                    ollama.Message(
+                        role=item.role,
+                        content=item.content,
+                        thinking=item.think,
+                    ).model_dump()
+                    for item in history
+                ],
+            )
+
+            # Vendor the response into our model
+            message = Message[T](role="assistant")
+            message.content         = response.message.content
+            message.think           = response.message.thinking
+            message.stats.duration  = (response.total_duration    or 0)/10e9
+            message.stats.generated = (response.eval_count        or 0)
+            message.stats.context   = (response.prompt_eval_count or 0)
+
+            # Ensure a valid schema when provided
+            if (schema is not None):
+                if (message.content is None):
+                    raise ValueError("Message content is None")
+                try:
+                    message.struct = schema.model_validate_json(message.content)
+                except ValidationError:
+                    logger.minor(
+                        f"Failed to validate {schema.__name__} model, "
+                        f"attempt ({attempt+1}/{retries}) • Content: {message.content}"
+                    )
+                    continue
+            break
+
+        else:
+            raise RuntimeError(f"Failed to generate valid {schema} in {retries} attempts")
+
+        self.messages.append(message)
+        return message

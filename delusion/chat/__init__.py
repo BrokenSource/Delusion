@@ -1,7 +1,8 @@
 import contextlib
 import copy
 from abc import ABC, abstractmethod
-from typing import Generator, Literal, Optional, Self, Union
+from collections.abc import Generator
+from typing import Literal, Self, cast
 
 from pydantic import BaseModel, Field, computed_field
 
@@ -14,18 +15,18 @@ class Message[T: BaseModel](BaseModel):
     role: Role = "user"
     """Sender or message type"""
 
-    think: Optional[str] = None
+    think: str | None = None
     """Internal model reasoning"""
 
-    content: Optional[str] = None
+    content: str | None = None
     """Text content"""
 
-    struct: T = None # type: ignore
+    struct: T = cast(T, None)
     """Validated model instance"""
 
     class Stats(BaseModel):
 
-        duration: Second = 0.0
+        duration: Second = 0.00
         """Time taken to generate the message"""
 
         generated: Token = 0
@@ -39,7 +40,7 @@ class Message[T: BaseModel](BaseModel):
         def tokens_per_second(self) -> float:
             return (
                 round(self.generated / self.duration, 2)
-                if self.duration > 0 else 0.0
+                if self.duration > 0 else 0.00
             )
 
     stats: Stats = Field(default_factory=Stats)
@@ -49,10 +50,10 @@ class Message[T: BaseModel](BaseModel):
 
 class Chat(BaseModel, ABC):
 
-    model: str = None # type: ignore
+    model: str = cast("", None) # type: ignore
     """Common model name or identifier"""
 
-    think: Union[Literal["low", "medium", "high"], bool] = True
+    think: Literal["low", "medium", "high"] | bool = True
     """Whether to enable internal reasoning and/or its effort level"""
 
     messages: list[Message] = Field(default_factory=list)
@@ -67,10 +68,15 @@ class Chat(BaseModel, ABC):
         finally:
             self.messages = this
 
+    @contextlib.contextmanager
+    def fork(self) -> Generator[Self]:
+        """Get a new instance with current settings for multithreading"""
+        yield type(self)(**self.model_dump())
+
     @abstractmethod
     def generate[T: BaseModel](self,
-        schema: Optional[type[T]]=None,
-        retries: int=3,
+        schema: type[T] | None = None,
+        retries: int = 3,
     ) -> Message[T]:
         """
         Generate the next message for chat context:
@@ -81,7 +87,7 @@ class Chat(BaseModel, ABC):
 
     def send(self,
         content: str,
-        role: Role="user",
+        role: Role = "user",
     ) -> Self:
         """Add a message to the chat history"""
         self.messages.append(Message(role=role, content=content))

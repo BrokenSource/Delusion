@@ -26,7 +26,7 @@ dependencies = ["delusion"]
 ### Chat
 
 ```python
-from delusion.chat.router import Ollama
+from delusion.chat.router.ollamax import Ollama
 from pydantic import BaseModel, Field
 
 class Country(BaseModel):
