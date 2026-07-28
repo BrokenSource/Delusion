@@ -70,7 +70,7 @@ class Chat(BaseModel, ABC):
 
     @contextlib.contextmanager
     def fork(self) -> Generator[Self]:
-        """Get a new instance with current settings for multithreading"""
+        """Get a new self-instance with current settings for multithreading"""
         yield type(self)(**self.model_dump())
 
     @abstractmethod

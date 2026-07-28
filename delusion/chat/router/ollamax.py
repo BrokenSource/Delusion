@@ -16,13 +16,18 @@ from delusion.cache import CHAT_CACHE
 from delusion.chat import Chat, Message
 
 
+# Minor class proxy
+class _Options(Options):
+    keep_alive: float | str = "5m"
+
+
 class Ollama(Chat):
     """Wrapper for https://ollama.com/"""
 
     host: Annotated[str, Field(exclude=True)] = os.getenv("OLLAMA_HOST", "127.0.0.1:11434")
     """Server address (URL, IPv4, IPv6, localhost, hostname, ...)"""
 
-    options: Options = Field(default_factory=Options)
+    options: _Options = Field(default_factory=_Options)
     """Generation options"""
 
     _client: Client = PrivateAttr(default_factory=Client)
@@ -63,6 +68,12 @@ class Ollama(Chat):
         else:
             raise RuntimeError("Couldn't start ollama server")
 
+        return self
+
+    # fixme: ollama api
+    def stop(self) -> Self:
+        """Unloads the current model from memory"""
+        subprocess.check_call(("ollama", "stop", self.model))
         return self
 
     # -------------------------------------------------------------------------#
@@ -134,6 +145,7 @@ class Ollama(Chat):
                 model=self.model,
                 think=self.think,
                 options=options.model_dump(),
+                keep_alive=options.keep_alive,
                 format=(schema.model_json_schema() if schema else None),
                 messages=[
                     ollama.Message(
