@@ -1,7 +1,5 @@
-> [!IMPORTANT]
-> Work in progress - internal code refactor.
-
 <div align="center">
+  <img src="https://raw.githubusercontent.com/BrokenSource/Delusion/main/website/assets/logo.png" width="210">
   <h1>Delusion</h1>
   <span>✨ The missing conveniences in generative models ✨</span>
 </div>
@@ -36,7 +34,7 @@ class Country(BaseModel):
         description="Officially recognized languages"
     )
 
-chat = Ollama().serve()
+chat = Ollama().cache().serve()
 chat.gemma4("e2b").pull()
 chat.send("Tell me about Canada, its capital and spoken languages.")
 
@@ -51,7 +49,7 @@ assert (canada.model.languages == {"English", "French"})
 
 ## 📦 Standards
 
-In an effort to minimize [xkcd 927](https://xkcd.com/927/), Delusion only introduces abstractions that provide clear value or represent shared semantics across providers, using provider-native packages whenever available.
+In an effort to minimize [xkcd 927](https://xkcd.com/927/), Delusion only introduces abstractions that provide clear value or represent shared semantics across providers, proxying or extending native packages whenever available.
 
 _For example, the Options class for ollama models shall only apply to itself:_
 
