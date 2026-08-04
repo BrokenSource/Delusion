@@ -18,10 +18,10 @@ class Message[T: BaseModel](BaseModel):
     think: str | None = None
     """Internal model reasoning"""
 
-    content: str | None = None
+    text: str | None = None
     """Text content"""
 
-    struct: T = cast(T, None)
+    model: T = cast(T, None)
     """Validated model instance"""
 
     class Stats(BaseModel):
@@ -50,7 +50,7 @@ class Message[T: BaseModel](BaseModel):
 
 class Chat(BaseModel, ABC):
 
-    model: str = cast("", None) # type: ignore
+    model: str = cast(str, None)
     """Common model name or identifier"""
 
     think: Literal["low", "medium", "high"] | bool = True
@@ -90,5 +90,5 @@ class Chat(BaseModel, ABC):
         role: Role = "user",
     ) -> Self:
         """Add a message to the chat history"""
-        self.messages.append(Message(role=role, content=content))
+        self.messages.append(Message(role=role, text=content))
         return self

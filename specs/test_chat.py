@@ -10,18 +10,18 @@ class Country(BaseModel):
     )
 
 def test_ollama():
-    chat = Ollama().serve()
+    chat = Ollama().cache().serve()
     chat.gemma4("e2b").pull()
     chat.send("Tell me about Canada, its capital and spoken languages.")
 
     # Your linter should properly point to the class
     canada = chat.generate(schema=Country)
-    print(canada.struct)
+    print(canada.model)
 
-    assert isinstance(canada.struct, Country)
-    assert (canada.struct.name == "Canada")
-    assert (canada.struct.capital == "Ottawa")
-    assert (canada.struct.languages == {"English", "French"})
+    assert isinstance(canada.model, Country)
+    assert (canada.model.name == "Canada")
+    assert (canada.model.capital == "Ottawa")
+    assert (canada.model.languages == {"English", "French"})
 
 if __name__ == "__main__":
     test_ollama()
