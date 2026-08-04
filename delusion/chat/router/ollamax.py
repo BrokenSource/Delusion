@@ -4,7 +4,7 @@ import shutil
 import subprocess
 import time
 from collections.abc import MutableMapping
-from typing import Annotated, Self, cast
+from typing import Annotated, Literal, Self, cast
 
 import cachetools
 import ollama
@@ -18,7 +18,12 @@ from delusion.chat import Chat, Message
 # Minor class proxy
 class _Options(Options):
     keep_alive: float | str = "5m"
+
     min_p: float | None = None
+    """Minimum probability threshold for token selection"""
+
+    think: Literal["low", "medium", "high", "max"] | bool = True
+    """Whether to enable internal reasoning and/or its effort level"""
 
 
 class Ollama(Chat):
@@ -137,7 +142,7 @@ class Ollama(Chat):
             # Attempt to generate
             response = self._client.chat(
                 model=self.model,
-                think=self.think,
+                think=self.options.think,
                 options=options.model_dump(),
                 keep_alive=options.keep_alive,
                 format=(schema.model_json_schema() if schema else None),
