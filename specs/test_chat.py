@@ -22,3 +22,6 @@ def test_ollama():
     assert (canada.struct.name == "Canada")
     assert (canada.struct.capital == "Ottawa")
     assert (canada.struct.languages == {"English", "French"})
+
+if __name__ == "__main__":
+    test_ollama()
