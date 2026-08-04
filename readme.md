@@ -16,7 +16,7 @@ A small toolkit for generative models, with practical conveniences built in: suc
 
 ## 📦 Usage
 
-Simply add the [`delusion`](https://pypi.org/project/delusion/) PyPI package to your `pyproject.toml` and use it:
+Simply add the [`delusion`](https://pypi.org/project/delusion/) PyPI package to your project and use it:
 
 ```toml
 [project]
@@ -48,3 +48,39 @@ assert (canada.model.name == "Canada")
 assert (canada.model.capital == "Ottawa")
 assert (canada.model.languages == {"English", "French"})
 ```
+
+## 📦 Standards
+
+In an effort to minimize [xkcd 927](https://xkcd.com/927/), delusion only introduces abstractions that provide clear value or represent shared semantics.
+
+_For example, the Options class for ollama models shall only apply to itself:_
+
+```python
+import ollama
+
+local = Ollama(model="gemma4:e2b")
+cloud = OpenAI(model="gpt-whatever")
+
+isinstance(local.options, ollama.Options) # True
+isinstance(cloud.options, ollama.Options) # False
+```
+
+Although both support `.temperature = 0.0`, the intended use is:
+
+```python
+# Individual settings
+if os.getenv("PRODUCTION", None):
+    chat = OpenAI(model=...)
+    chat.options.temperature = 0.0
+else:
+    chat = Ollama(model=...)
+    chat.options.temperature = 0.0
+
+# Shared interface
+chat.send(...)
+chat.generate(schema=...)
+```
+
+Same for models: rather than over-abstracting capabilities, quantization, names, variants, and other provider-specific details, some code duplication is natural to keep it minimal and decoupled.
+
+Conversely, `Message[T]` is abstracted because it represents a common semantic across providers.
