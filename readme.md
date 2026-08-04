@@ -51,7 +51,7 @@ assert (canada.model.languages == {"English", "French"})
 
 ## 📦 Standards
 
-In an effort to minimize [xkcd 927](https://xkcd.com/927/), delusion only introduces abstractions that provide clear value or represent shared semantics.
+In an effort to minimize [xkcd 927](https://xkcd.com/927/), Delusion only introduces abstractions that provide clear value or represent shared semantics across providers, using provider-native packages whenever available.
 
 _For example, the Options class for ollama models shall only apply to itself:_
 

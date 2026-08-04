@@ -49,5 +49,6 @@ class Chat[T: BaseModel](BaseModel, ABC):
         role: Role = "user",
     ) -> Self:
         """Add a message to the chat history"""
-        self.messages.append(Message(role=role, text=text))
+        message = Message(role=role, text=text)
+        self.messages.append(message)
         return self
