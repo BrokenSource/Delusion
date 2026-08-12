@@ -44,15 +44,17 @@ class Ollama(Chat):
 
     # -------------------------------------------------------------------------#
 
-    def cache(self, cache: MutableMapping | None = None) -> Self:
+    def cache(self, cache: MutableMapping) -> Self:
         """Apply caching to generative or data querying ollama calls"""
-        if cache is None:
-            from delusion.cache import CHAT_CACHE
-            cache = CHAT_CACHE # type: ignore
         self._client.web_search = cachetools.cached(cache)(self._client.web_search) # type: ignore
         self._client.web_fetch  = cachetools.cached(cache)(self._client.web_fetch)  # type: ignore
         self._client.generate   = cachetools.cached(cache)(self._client.generate)   # type: ignore
         self._client.chat       = cachetools.cached(cache)(self._client.chat)       # type: ignore
+        return self
+
+    def diskcache(self) -> Self:
+        from delusion.cache import CHAT_CACHE
+        self.cache(CHAT_CACHE) # type: ignore
         return self
 
     def serve(self,
@@ -192,4 +194,31 @@ class Ollama(Chat):
         self.options.temperature = 1.0
         self.options.top_p = 0.95
         self.options.top_k = 64
+        return self
+
+    def qwen3_5(self,
+        variant: str,
+        general: bool = True,
+        instruct: bool = False,
+    ) -> Self:
+        """https://ollama.com/library/qwen3.5"""
+        self.model = f"qwen3.5:{variant}"
+        self.options.think = not instruct
+        self.options.presence_penalty = 1.50
+        self.options.repeat_penalty = 1.00
+        self.options.temperature = 1.00
+        self.options.min_p = 0.00
+        self.options.top_p = 0.95
+        self.options.top_k = 20
+
+        # https://huggingface.co/Qwen/Qwen3.5-9B
+        match (instruct, general):
+            case (False, False):
+                self.options.temperature = 0.60
+                self.options.presence_penalty = 0.00
+
+            case (True, True):
+                self.options.temperature = 0.70
+                self.options.top_p = 0.80
+
         return self

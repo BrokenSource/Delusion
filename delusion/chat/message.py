@@ -17,7 +17,7 @@ class Message[T: BaseModel](BaseModel):
     """Text content"""
 
     model: T = cast(T, None)
-    """Validated model instance"""
+    """Validated schema model instance"""
 
     audio: list[None] = Field(default_factory=list)
     """Audio content"""

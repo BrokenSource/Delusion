@@ -1,4 +1,4 @@
-from delusion.chat.router.ollamax import Ollama
+from delusion.chat.option.ollamax import Ollama
 from pydantic import BaseModel, Field
 
 
@@ -10,14 +10,12 @@ class Country(BaseModel):
     )
 
 def test_ollama():
-    chat = Ollama().cache().serve()
+    chat = Ollama().diskcache().serve()
     chat.gemma4("e2b").pull()
     chat.send("Tell me about Canada, its capital and spoken languages.")
-
-    # Your linter should properly point to the class
     canada = chat.generate(schema=Country)
-    print(canada.model)
 
+    # Linters should know all fields
     assert isinstance(canada.model, Country)
     assert (canada.model.name == "Canada")
     assert (canada.model.capital == "Ottawa")
