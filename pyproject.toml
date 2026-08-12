@@ -8,8 +8,8 @@ requires-python = ">=3.12" # PEP 695
 dependencies = [
     "cachetools",
     "diskcache",
+    "platformdirs",
     "pydantic",
-    "smartdirs",
 ]
 
 [project.urls]

@@ -5,11 +5,12 @@ __package__ = "delusion"
 __version__ = "0.2.3"
 __license__ = "MIT"
 
-from smartdirs import Path, SmartDirs
+from pathlib import Path
 
-dirs = SmartDirs(
-    pkg=Path(__file__).parent,
-    app=str(__package__),
-    org="tremeschin",
-    url="com",
+from platformdirs import PlatformDirs
+
+dirs = PlatformDirs(
+    appname=__package__,
+    ensure_exists=True,
+    opinion=True,
 )
