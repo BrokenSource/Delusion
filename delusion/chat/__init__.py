@@ -12,7 +12,7 @@ from delusion.types import Role
 
 class Chat[T: BaseModel](BaseModel, ABC):
 
-    model: str = cast(str, None)
+    model: str = cast(str, cast(object, None))
     """Common model name or identifier"""
 
     messages: list[Message[T]] = Field(default_factory=list)
