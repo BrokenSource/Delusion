@@ -22,7 +22,7 @@ class _Options(Options):
     min_p: float | None = None
     """Minimum probability threshold for token selection"""
 
-    think: Literal["low", "medium", "high", "max"] | bool = True
+    think: Literal["low", "medium", "high"] | bool = True
     """Whether to enable internal reasoning and/or its effort level"""
 
 
