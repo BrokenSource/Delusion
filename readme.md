@@ -47,6 +47,23 @@ assert (canada.model.capital == "Ottawa")
 assert (canada.model.languages == {"English", "French"})
 ```
 
+### Audio
+
+Example using [audio.cpp](https://github.com/0xShug0/audio.cpp):
+
+```python
+from delusion.audio.cpp import AudioCPP, OmniVoice
+
+# No PyTorch or ONNX required
+audio = AudioCPP(
+    model=OmniVoice(quant="q8_0").download()
+)
+
+# Uses NamedTemporaryFile internally
+speak = audio.tts(text="お水はもう一杯もらえますか")
+Path("output.wav").write_bytes(speak.wav)
+```
+
 ## 📦 Standards
 
 In an effort to minimize [xkcd 927](https://xkcd.com/927/), Delusion only introduces abstractions that provide clear value or represent shared semantics across providers, proxying or extending native packages whenever available.
