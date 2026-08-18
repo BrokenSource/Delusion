@@ -1,0 +1,58 @@
+[project]
+site_name = "Delusion"
+site_author = "Tremeschin"
+site_description = "🔮 The missing conveniences in generative models"
+site_url  = "https://delusion.tremeschin.com/"
+repo_url  = "https://github.com/BrokenSource/Delusion/"
+repo_name = "BrokenSource/Delusion"
+docs_dir  = "website"
+nav = [
+  {Origin = "https://tremeschin.com/"},
+  {Home = [
+    "index.md",
+    "changelog.md",
+    "about.md",
+  ]},
+  {Get = [
+      "get/pypi.md"
+  ]},
+  {Chat = [
+    # "chat/index.md",
+    {Option = [
+        "chat/ollama.md",
+    ]}
+  ]},
+  {Audio = [
+    # "chat/index.md",
+    {Option = [
+        "audio/cpp.md",
+    ]}
+  ]},
+]
+
+[project.theme]
+name = "zentheme"
+favicon = "assets/logo.png"
+
+[project.theme.icon]
+logo = "octicons/sparkle-16"
+
+[[project.extra.social]]
+icon = "fontawesome/brands/discord"
+link = "https://discord.gg/KjqvcYwRHm"
+name = "Discord"
+
+[[project.extra.social]]
+icon = "fontawesome/brands/github"
+link = "https://github.com/Tremeschin"
+name = "GitHub"
+
+[[project.extra.social]]
+icon = "simple/githubsponsors"
+link = "https://github.com/sponsors/Tremeschin"
+name = "GitHub Sponsors"
+
+[[project.extra.social]]
+icon = "fontawesome/brands/patreon"
+link = "https://www.patreon.com/Tremeschin"
+name = "Patreon"

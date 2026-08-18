@@ -15,7 +15,7 @@ import delusion
 MODELS: Path = Path(os.getenv("HF_HOME", delusion.dirs.user_data_path.joinpath("audio-cpp")))
 """Global models directory"""
 
-def optional(*items: Any) -> Sequence[Any]:
+def optarg(*items: Any) -> Sequence[Any]:
     return [] if None in items else items
 
 # ---------------------------------------------------------------------------- #
@@ -185,7 +185,7 @@ class AudioCPP(BaseModel):
                 "audiocpp_cli",
                 *self.compute.args(),
                 *self.model.args(),
-                *optional("--instruct", instruct),
+                *optarg("--instruct", instruct),
                 "--task", Capability.TextToSpeech,
                 "--text", text,
                 "--out", output,
