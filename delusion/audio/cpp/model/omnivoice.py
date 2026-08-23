@@ -15,7 +15,7 @@ class OmniVoice(
     family: Literal["omnivoice"] = "omnivoice"
     """Model architecture"""
 
-    quant: Literal["q8_0", "bf16", "f16"] = "q8_0"
+    quant: Literal["q8_0", "bf16", "f16"] = "f16"
     """Model quantization"""
 
     @override

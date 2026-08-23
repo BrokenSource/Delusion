@@ -12,6 +12,7 @@ from pydantic import BaseModel, Field
 import delusion
 from delusion.audio.cpp.model import (
     AudioModel,
+    SupportsMusicGeneration,
     SupportsTextToSpeech,
     SupportsVoiceDesign,
 )
@@ -37,7 +38,24 @@ class AudioCPP(BaseModel):
         if not isinstance(self.model, SupportsTextToSpeech):
             raise TypeError(f"{type(self)} model does not support tts")
 
-        return  self.runtime.run(
+        return self.runtime.run(
             request=self.model.tts(text=text),
+            options=self.options,
+        )
+
+    def music(self,
+        prompt: str,
+        duration: float = 60,
+        lyrics: str | None = None,
+    ) -> GenerationResponse:
+        if not isinstance(self.model, SupportsMusicGeneration):
+            raise TypeError(f"{type(self)} model does not support music generation")
+
+        return self.runtime.run(
+            request=self.model.music(
+                prompt=prompt,
+                duration=duration,
+                lyrics=lyrics,
+            ),
             options=self.options,
         )

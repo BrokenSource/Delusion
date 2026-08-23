@@ -9,6 +9,13 @@ tags:
 
 <style>ul li {line-height: 1.1}</style>
 
+### :package: v0.4.1 <small>Unreleased</small> {#v0.4.1}
+
+!!! quote ""
+    - Rework audio.cpp architecture and refactor subpackage
+    - Default OpenMP workers to `os.cpu_count() or 4`
+    - Support and abstract Stable Audio 3 model
+
 ### :package: v0.4.0 <small>August 16, 2026</small> {#v0.4.0}
 
 !!! quote ""

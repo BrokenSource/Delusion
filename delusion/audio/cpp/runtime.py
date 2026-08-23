@@ -21,7 +21,7 @@ class Compute(BaseModel):
     device: int = 0
     """Backend device index"""
 
-    threads: int = 4
+    threads: int = (os.cpu_count() or 4)
     """OpenMP worker threads"""
 
     def args(self) -> Iterable[str]:

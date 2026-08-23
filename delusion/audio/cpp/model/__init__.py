@@ -67,3 +67,13 @@ class SupportsVoiceDesign(ABC):
     ) -> GenerationRequest:
         """Voices from prompts"""
         ...
+
+class SupportsMusicGeneration(ABC):
+
+    @abstractmethod
+    def music(self,
+        prompt: str,
+        duration: float = 60,
+        lyrics: str | None = None,
+    ) -> GenerationRequest:
+        ...
