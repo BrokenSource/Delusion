@@ -12,7 +12,68 @@ A small toolkit for generative models, with practical conveniences built in: suc
 - [x] **Modular**: Easily write your implementations or modify existing ones.
 - [x] **Minimal**: Avoids the complexity and commitment of a full framework.
 
-<br>
+## Examples
+
+### Chat
+
+Chat history, schema-typed messages, auto-validation:
+
+```python
+from delusion.chat.option.ollamax import Ollama
+from pydantic import BaseModel, Field
+
+class Country(BaseModel):
+    name: str
+    capital: str
+    languages: set[str] = Field(
+        description="Officially recognized languages"
+    )
+
+chat = Ollama().cache().serve()
+chat.gemma4("e2b").pull()
+chat.send("Tell me about Canada, its capital and spoken languages.")
+
+# Linters know all fields
+canada = chat.generate(schema=Country)
+
+assert (canada.model.name == "Canada")
+assert (canada.model.capital == "Ottawa")
+assert (canada.model.languages == {"English", "French"})
+```
+
+### Audio
+
+Using [0xShug0/audio.cpp](https://github.com/0xShug0/audio.cpp), text-to speech with [OmniVoice](https://github.com/k2-fsa/OmniVoice/):
+
+```python
+from delusion.audio.cpp import AudioCPP, OmniVoice
+
+audio = AudioCPP(
+    model=OmniVoice().download(),
+)
+
+speak = audio.tts(text="お水はもう一杯もらえますか")
+Path("/tmp/output.wav").write_bytes(speak.wav)
+```
+
+Music generation with [Stable Audio 3](https://github.com/Stability-AI/stable-audio-3):
+
+```python
+from delusion.audio.cpp import AudioCPP, StableAudio3
+
+audio = AudioCPP(
+    model=StableAudio3(quant="q8_0").download(),
+)
+
+music = audio.music(
+    prompt="piano, flute, inspirational, ambient",
+    duration=60,
+)
+
+Path("/tmp/output.wav").write_bytes(music.wav)
+```
+
+## Getting started
 
 <div align="center">
   <i>
