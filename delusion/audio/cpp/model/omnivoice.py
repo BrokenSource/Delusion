@@ -1,3 +1,4 @@
+from collections.abc import Iterable
 from pathlib import Path
 from typing import Literal, override
 
@@ -19,8 +20,8 @@ class OmniVoice(
     """Model quantization"""
 
     @override
-    def filename(self) -> Path:
-        return Path("OmniVoice-GGUF", f"omnivoice-{self.quant}.gguf")
+    def files(self) -> Iterable[Path]:
+        yield Path("OmniVoice-GGUF", f"omnivoice-{self.quant}.gguf")
 
     @override
     def tts(self, text: str) -> GenerationRequest:

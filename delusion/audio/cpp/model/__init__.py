@@ -24,24 +24,27 @@ class AudioModel(BaseModel, ABC):
     """HuggingFace repository commit for caching"""
 
     @abstractmethod
-    def filename(self) -> Path:
-        """Model location on repository"""
+    def files(self) -> Iterable[Path]:
+        """Files to download from HuggingFace"""
         ...
 
     def download(self) -> Self:
         """Download model from HuggingFace"""
         import huggingface_hub
-        huggingface_hub.hf_hub_download(
-            repo_id=self.repository,
-            filename=self.filename().as_posix(),
-            revision=self.revision,
-            local_dir=MODELS,
-        )
+
+        for file in self.files():
+            huggingface_hub.hf_hub_download(
+                repo_id=self.repository,
+                filename=file.as_posix(),
+                revision=self.revision,
+                local_dir=MODELS,
+            )
+
         return self
 
     def model(self) -> Path:
-        """Path to the local downloaded model"""
-        return MODELS.joinpath(self.filename())
+        """Path to the main model file (first self.files)"""
+        return MODELS.joinpath(next(iter(self.files())))
 
     def args(self) -> Iterable[str]:
         yield from ("--model", self.model())

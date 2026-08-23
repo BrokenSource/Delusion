@@ -12,6 +12,7 @@ license from the model owners, as seen in (please check independently):
 - https://huggingface.co/collections/stabilityai/stable-audio-3
 """
 
+from collections.abc import Iterable
 from pathlib import Path
 from typing import Literal, override
 
@@ -36,14 +37,14 @@ class StableAudio3(
     """Model quantization"""
 
     @override
-    def filename(self) -> Path:
+    def files(self) -> Iterable[Path]:
         variant = {
             "small-music": "Small-Music",
             "small-sfx": "Small-SFX",
             "medium": "Medium",
         }[self.variant]
 
-        return Path(
+        yield Path(
             f"Stable-Audio-3-{variant}-GGUF",
             f"stable-audio-3-{self.variant}-{self.quant}.gguf"
         )
