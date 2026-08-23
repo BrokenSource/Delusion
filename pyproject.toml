@@ -1,6 +1,6 @@
 [project]
 name        = "delusion"
-description = "✨ The missing conveniences in generative models"
+description = "🔮 Convenient generative models pythonic wrappers"
 version     = "0.4.0"
 license     = "MIT"
 readme      = "readme.md"

@@ -3,6 +3,14 @@ title: About
 icon: material/menu
 ---
 
+## Name
+
+Current deep learning models are statistical machines: they produce what best fits their context and training. For low temperatures, the output is deterministic - a _"fixed belief"_. Small errors can also compound through self-reinforcement, and the truth is easily derailed along the way.
+
+For humans, a delusion is a fixed belief held despite evidence to the contrary. Hence the package name `delusion`, a slightly dark, tongue-in-cheek nod to that behavior[^humans].
+
+[^humans]: What could go wrong with 100 trillion neural connections running on less power than a light bulb?
+
 ## Standards
 
 In an effort to minimize [xkcd 927](https://xkcd.com/927/), only abstractions that provide clear value or represent shared semantics across providers are made, proxying or extending native packages whenever available.

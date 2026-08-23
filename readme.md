@@ -1,7 +1,7 @@
 <div align="center">
   <img src="https://raw.githubusercontent.com/BrokenSource/Delusion/main/website/assets/logo.png" width="210">
   <h1>Delusion</h1>
-  <span>🔮 The missing conveniences in generative models 🔮</span>
+  <span>🔮 Convenient generative models pythonic wrappers 🔮</span>
 </div>
 
 ## Description
