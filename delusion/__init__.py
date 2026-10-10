@@ -1,6 +1,6 @@
 from dearlog import logger  # isort: split
 
-__about__   = "✨ The missing conveniences in generative models"
+__about__   = "🔮 Convenient generative models pythonic wrappers"
 __package__ = "delusion"
 __version__ = "0.4.0"
 __license__ = "MIT"

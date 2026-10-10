@@ -7,7 +7,7 @@ icon: material/menu
 
 Current deep learning models are statistical machines: they produce what best fits their context and training. For low temperatures, the output is deterministic - a _"fixed belief"_. Small errors can also compound through self-reinforcement, and the truth is easily derailed along the way.
 
-For humans, a delusion is a fixed belief held despite evidence to the contrary. Hence the package name `delusion`, a slightly dark, tongue-in-cheek nod to that behavior[^humans].
+For humans, a delusion is a fixed belief held despite evidence to the contrary ([#wiki](https://en.wikipedia.org/wiki/Delusion)). Hence the package name `delusion`, a slightly dark, tongue-in-cheek nod to that behavior[^humans].
 
 [^humans]: What could go wrong with 100 trillion neural connections running on less power than a light bulb?
 

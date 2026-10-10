@@ -17,7 +17,9 @@ from delusion.chat import Chat, Message
 
 # Minor class proxy
 class _Options(Options):
-    keep_alive: float | str = "5m"
+
+    keep_alive: int | str = 300
+    """Seconds to hold the model loaded after generations"""
 
     min_p: float | None = None
     """Minimum probability threshold for token selection"""
