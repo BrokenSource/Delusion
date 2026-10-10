@@ -5,6 +5,7 @@ site_description = "🔮 Convenient generative models pythonic wrappers"
 site_url  = "https://delusion.tremeschin.com/"
 repo_url  = "https://github.com/BrokenSource/Delusion/"
 repo_name = "BrokenSource/Delusion"
+extra_css = ["main.css"]
 docs_dir  = "website"
 nav = [
   {Origin = "https://tremeschin.com/"},
