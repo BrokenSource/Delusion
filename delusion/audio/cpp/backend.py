@@ -13,10 +13,10 @@ from delusion.audio.cpp.task import GenerationRequest, GenerationResponse
 
 
 class Compute(BaseModel):
-    """Runtime options"""
+    """Computation backend options"""
 
     backend: Literal["cpu", "cuda", "rocm", "vulkan", "metal", "best"] = "best"
-    """Hardware accelerator to use (support at compilation time)"""
+    """Hardware accelerator to use (support depends on compile options)"""
 
     device: int = 0
     """Backend device index"""
@@ -30,7 +30,7 @@ class Compute(BaseModel):
         yield from ("--threads", str(self.threads))
 
 
-class Runtime(Compute, ABC):
+class Backend(BaseModel, ABC):
     kind: str # Children must pin literals
 
     @abstractmethod
@@ -41,10 +41,14 @@ class Runtime(Compute, ABC):
         ...
 
 
-class Local(Runtime):
+class Local(Backend):
     kind: Literal["local"] = "local"
 
+    compute: Compute = Field(default_factory=Compute)
+    """Computation backend options"""
+
     cli: str = "audiocpp_cli"
+    """Path to an AudioCPP CLI binary"""
 
     @override
     def run(self,
@@ -56,7 +60,7 @@ class Local(Runtime):
 
             subprocess.check_call((
                 self.cli,
-                *Compute.args(self),
+                *self.compute.args(),
                 *options.args(),
                 *request.args(),
                 "--out", output,
@@ -67,14 +71,14 @@ class Local(Runtime):
             )
 
 
-class Server(Runtime):
+class Server(Backend):
     kind: Literal["server"] = "server"
 
     host: Annotated[str, Field(exclude=True, frozen=True)] = os.getenv("AUDIOCPP_HOST", "127.0.0.1:8080")
     """Server address (URL, IPv4, IPv6, localhost, hostname, ...)"""
 
 
-class Docker(Runtime):
+class Docker(Backend):
     kind: Literal["docker"] = "docker"
 
     image: str = "0xshug0/audio.cpp:full-cuda13"
