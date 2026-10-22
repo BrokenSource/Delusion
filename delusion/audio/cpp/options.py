@@ -11,4 +11,4 @@ class Options(BaseModel):
 
     def args(self) -> Iterable[str]:
         if self.seed is not None:
-            yield from ("--seed", self.seed)
+            yield from ("--seed", str(self.seed))

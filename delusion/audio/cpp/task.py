@@ -79,7 +79,7 @@ class GenerationRequest(BaseModel):
 
     def args(self) -> Iterable[str]:
         yield from ("--task", self.task)
-        yield from ("--model", self.model)
+        yield from ("--model", str(self.model))
         yield from ("--family", self.family)
 
         if self.route is not None:

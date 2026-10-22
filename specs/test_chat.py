@@ -1,4 +1,4 @@
-from delusion.chat.option.ollamax import Ollama
+from delusion.chat.option.ollama import Ollama
 from pydantic import BaseModel, Field
 
 
@@ -20,6 +20,8 @@ def test_ollama():
     assert (canada.model.name == "Canada")
     assert (canada.model.capital == "Ottawa")
     assert (canada.model.languages == {"English", "French"})
+
+    print(chat)
 
 if __name__ == "__main__":
     test_ollama()

@@ -20,7 +20,7 @@ _For example, the Options class for ollama models shall only apply to itself:_
 ```python
 import ollama
 
-from delusion.chat.option.ollamax import Ollama
+from delusion.chat.option.ollama import Ollama
 from delusion.chat.option.openai import OpenAI
 
 local = Ollama(model="gemma4:e2b")

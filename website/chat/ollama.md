@@ -4,7 +4,7 @@ icon: simple/ollama
 ---
 
 ```python
-from delusion.chat.option.ollamax import Ollama
+from delusion.chat.option.ollama import Ollama
 from pydantic import BaseModel, Field
 
 class Country(BaseModel):

@@ -19,7 +19,7 @@ A small toolkit for generative models, with practical conveniences built in: suc
 Chat history, schema-typed messages, auto-validation:
 
 ```python
-from delusion.chat.option.ollamax import Ollama
+from delusion.chat.option.ollama import Ollama
 from pydantic import BaseModel, Field
 
 class Country(BaseModel):

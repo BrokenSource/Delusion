@@ -1,10 +1,10 @@
 import os
 import subprocess
 import tempfile
-from abc import ABC, abstractmethod
+from abc import ABC, ABCMeta, abstractmethod
 from collections.abc import Iterable
 from pathlib import Path
-from typing import Annotated, Literal, override
+from typing import Annotated, Any, Literal, override
 
 from pydantic import BaseModel, Field
 
@@ -31,7 +31,7 @@ class Compute(BaseModel):
 
 
 class Backend(BaseModel, ABC):
-    kind: str # Children must pin literals
+    kind: Any # Children must pin literals
 
     @abstractmethod
     def run(self,
@@ -71,14 +71,14 @@ class Local(Backend):
             )
 
 
-class Server(Backend):
+class Server(Backend, metaclass=ABCMeta):
     kind: Literal["server"] = "server"
 
     host: Annotated[str, Field(exclude=True, frozen=True)] = os.getenv("AUDIOCPP_HOST", "127.0.0.1:8080")
     """Server address (URL, IPv4, IPv6, localhost, hostname, ...)"""
 
 
-class Docker(Backend):
+class Docker(Backend, metaclass=ABCMeta):
     kind: Literal["docker"] = "docker"
 
     image: str = "0xshug0/audio.cpp:full-cuda13"

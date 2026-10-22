@@ -4,12 +4,12 @@ import shutil
 import subprocess
 import time
 from collections.abc import MutableMapping
-from typing import Annotated, Literal, Self, cast
+from typing import Annotated, Any, Literal, Self, override
 
 import cachetools
 import ollama
-from ollama import Client, Options
-from pydantic import BaseModel, Field, ValidationError
+from ollama import ChatResponse, Client, Options
+from pydantic import BaseModel, Field, PrivateAttr, ValidationError
 
 from delusion import logger
 from delusion.chat import Chat, Message
@@ -28,7 +28,7 @@ class _Options(Options):
     """Whether to enable internal reasoning and/or its effort level"""
 
 
-class Ollama(Chat):
+class Ollama(Chat[BaseModel]):
     """Wrapper for https://ollama.com/"""
 
     host: Annotated[str, Field(exclude=True, frozen=True)] = \
@@ -38,10 +38,11 @@ class Ollama(Chat):
     options: _Options = Field(default_factory=_Options)
     """Generation options"""
 
-    _client: Client = cast(Client, None)
+    _client: Client = PrivateAttr(init=False)
     """Internal cached ollama client"""
 
-    def model_post_init(self, _ctx):
+    @override
+    def model_post_init(self, _ctx: Any):
         self._client = Client(host=self.host)
 
     # -------------------------------------------------------------------------#
@@ -113,10 +114,11 @@ class Ollama(Chat):
 
     # -------------------------------------------------------------------------#
 
-    def generate[T: BaseModel](self,
-        schema: type[T] | None = None,
+    @override
+    def generate[S: BaseModel](self,
+        schema: type[S] | None = None,
         retries: int = 3,
-    ) -> Message[T]:
+    ) -> Message[S]:
 
         # Branch state for internal mutations
         history = copy.deepcopy(self.messages)
@@ -144,7 +146,7 @@ class Ollama(Chat):
             options.seed = (options.seed or 0) + 1
 
             # Attempt to generate
-            response = self._client.chat(
+            response: ChatResponse = self._client.chat(
                 model=self.model,
                 think=self.options.think,
                 options=options.model_dump(),
@@ -161,7 +163,7 @@ class Ollama(Chat):
             )
 
             # Vendor the response into our model
-            message = Message[T](role="assistant")
+            message = Message[S](role="assistant")
             message.text            = response.message.content
             message.think           = response.message.thinking
             message.stats.duration  = (response.total_duration    or 0)/10e9
@@ -184,7 +186,7 @@ class Ollama(Chat):
         else:
             raise RuntimeError(f"Failed to generate valid {schema} in {retries} attempts")
 
-        self.messages.append(message)
+        self.messages.append(message) # type: ignore
         return message
 
     # -------------------------------------------------------------------------#
@@ -192,7 +194,7 @@ class Ollama(Chat):
 
     def gemma4(self, variant: str) -> Self:
         """https://ollama.com/library/gemma4"""
-        self.model = f"gemma4:{variant}"
+        self.model: str = f"gemma4:{variant}"
         self.options.temperature = 1.0
         self.options.top_p = 0.95
         self.options.top_k = 64
@@ -222,5 +224,7 @@ class Ollama(Chat):
             case (True, True):
                 self.options.temperature = 0.70
                 self.options.top_p = 0.80
+
+            case _: pass
 
         return self

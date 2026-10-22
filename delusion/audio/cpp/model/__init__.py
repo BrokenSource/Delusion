@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from collections.abc import Iterable
 from pathlib import Path
-from typing import Self
+from typing import Any, Self
 
 from pydantic import BaseModel
 
@@ -14,7 +14,7 @@ MODELS: Path = Path(delusion.dirs.user_data_path.joinpath("audio-cpp"))
 
 class AudioModel(BaseModel, ABC):
 
-    family: str # Children must pin literals
+    family: Any # Children must pin literals
     """Model architecture"""
 
     repository: str = "audio-cpp/audio.cpp-gguf"
@@ -47,7 +47,7 @@ class AudioModel(BaseModel, ABC):
         return MODELS.joinpath(next(iter(self.files())))
 
     def args(self) -> Iterable[str]:
-        yield from ("--model", self.model())
+        yield from ("--model", str(self.model()))
         yield from ("--family", self.family)
 
 # ---------------------------------------------------------------------------- #
